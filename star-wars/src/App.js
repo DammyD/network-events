@@ -1,10 +1,9 @@
 
 import MoreDetails from './components/MoreDetails';
 import Website from './components/Website';
-import { Route, Routes, useParams} from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 function App() {
 
-  let { id } = useParams();
   return (
 
     <Routes>
