@@ -49,7 +49,7 @@ const MoreDetails = () => {
       setLoading(false);
     };
     getData();
-  }, []);
+  }, [pathname]);
 
   if (loading) {
     return <div>Loading...</div>;
