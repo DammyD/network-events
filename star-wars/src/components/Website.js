@@ -40,7 +40,7 @@ const Website = () => {
   };
 
   return (
-    <div class="wrapper">
+    <div className="wrapper">
       <header>
         <svg viewBox="0 0 1347.6 227.4" className="logo">
           <g id="Logo">
