@@ -1,46 +1,63 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 import "../styles/website.css";
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
-const Website = () => {
+const MoreDetails = () => {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
   const [data, setData] = useState([]);
+  const [characters, setCharacters] = useState([]);
+  const [planets, setPlanets] = useState([]);
+  const [species, setSpecies] = useState([]);
+  const [starShips, setStarShips] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
+
+
+  const { pathname } = useLocation();
 
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`https://swapi.dev/api/films`)
-      .then((response) => {
-        setData(response.data.results);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setError(error);
-        setLoading(false);
-      });
-  }, []);
+
+    const getData = async () => {
+      const response = await axios.get(
+        `https://swapi.dev/api/films${pathname}`
+      );
+
+      const cast = await response.data.characters.map((url) =>
+        axios.get(url).then((res) => res.data.name)
+      );
+      const planet = await response.data.planets.map((url) =>
+        axios.get(url).then((res) => res.data.name)
+      );
+      const specie = await response.data.species.map((url) =>
+        axios.get(url).then((res) => res.data.name)
+      );
+      const starShip = await response.data.starships.map((url) =>
+        axios.get(url).then((res) => res.data.name)
+      );
+      const vehicle = await response.data.vehicles.map((url) =>
+        axios.get(url).then((res) => res.data.name)
+      );
+      setData(await response.data);
+      setCharacters(await Promise.all(cast));
+      setPlanets(await Promise.all(planet));
+      setSpecies(await Promise.all(specie));
+      setStarShips(await Promise.all(starShip));
+      setVehicles(await Promise.all(vehicle));
+      setLoading(false);
+    };
+    getData();
+  }, [pathname]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  const reduceLength = (text, maxLength) => {
-    if (text.length > maxLength) {
-      return text.slice(0, maxLength).trim() + "...";
-    } else {
-      return text;
-    }
-  };
 
   return (
-    <div className="wrapper">
+    <>
       <header>
         <svg viewBox="0 0 1347.6 227.4" className="logo">
           <g id="Logo">
@@ -54,26 +71,70 @@ const Website = () => {
           </g>
         </svg>
       </header>
-      <div className="container">
-        <div className="data-grid">
-          {data.map((item, index) => (
-            <div key={item.episode_id} className="data-list">
-              <h3 className="title">{item.title}</h3>
-              <p className="date">
-                {new Date(item.release_date).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </p>
-              <p className="crawl">{reduceLength(item.opening_crawl, 260)}</p>
-              <Link to={"/" + (index + 1)}>More Info</Link>
-            </div>
-          ))}
+
+      <section>
+        <header className="card">
+          <div className="link">
+            <Link to="/">Back to list</Link>
+          </div>
+
+          <h2 className="title">{data.title}</h2>
+          <p className="director">Director: {data.director}</p>
+          <p>Producer: {data.producer}</p>
+        </header>
+
+        <div className="describe">
+          <h3>Description</h3>
+          <p>{data.opening_crawl}</p>
         </div>
-      </div>
-    </div>
+
+        <div className="characters">
+          <h3>Characters</h3>
+          <ul>
+            {characters.map((char, idx) => (
+              <li key={idx}>{char}</li>
+            ))}
+    
+          </ul>
+        </div>
+        <div className="characters">
+          <h3>Planets</h3>
+          <ul>
+            {planets.map((char, idx) => (
+              <li key={idx}>{char}</li>
+            ))}
+           
+          </ul>
+        </div>
+        <div className="characters">
+          <h3>Species</h3>
+          <ul>
+            {species.map((char, idx) => (
+              <li key={idx}>{char}</li>
+            ))}
+            
+          </ul>
+        </div>
+        <div className="characters">
+          <h3>Starships</h3>
+          <ul>
+            {starShips.map((char, idx) => (
+              <li key={idx}>{char}</li>
+            ))}
+           
+          </ul>
+        </div>
+        <div className="characters">
+          <h3>Vehicles</h3>
+          <ul>
+            {vehicles.map((char, idx) => (
+              <li key={idx}>{char}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    </>
   );
 };
 
-export default Website;
+export default MoreDetails;
